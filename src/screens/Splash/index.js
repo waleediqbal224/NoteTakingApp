@@ -2,7 +2,11 @@ import react from "react";
 import { View, Text, StyleSheet, Image } from "react-native";
 import { BACKGROUNG_COLOR } from "../../../res/drawables";
 
-const Splash = ({ navigation }) => {
+const Splash = (props) => {
+  setTimeout(() => {
+    props.navigation.replace("Main");
+  }, 3000);
+
   return (
     <View style={styles.container}>
       <Image style={styles.logo} source={require("../../../assets/logo.png")} />
