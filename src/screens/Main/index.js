@@ -6,9 +6,14 @@ import ImageButton from "../../components/ImageButton";
 const Main = (props) => {
   return (
     <View style={styles.container}>
-      <View style={styles.imgBtn}>
-        <ImageButton source={ADD_BUTTON_IMG} onPress={() => alert("Pressed")} />
-      </View>
+      <Text></Text>
+      <ImageButton
+        style={{
+          alignSelf: "flex-end",
+        }}
+        source={ADD_BUTTON_IMG}
+        onPress={() => props.navigation.navigate("Create")}
+      />
     </View>
   );
 };
@@ -16,15 +21,13 @@ const Main = (props) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "space-between",
   },
-  imgBtn: {
-    flex: 1,
-    position: "absolute",
-    left: 270,
-    top: 600,
-  },
+  // imgBtn: {
+  //   position: "absolute",
+  //   bottom: 30,
+  //   right: 30,
+  // },
 });
 
 export default Main;
