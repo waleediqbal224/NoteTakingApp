@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -16,23 +16,33 @@ import {
   COLOR_BLACK,
 } from "../../../res/drawables";
 
-const CreateNote = (props) => {
-  const [title, setTitle] = useState("");
+const UpdateNote = (props) => {
+  let noteTitle = props.route.params;
+  console.log(props.route.params);
+  console.log(noteTitle);
+  const [title, setTitle] = useState(noteTitle);
   const [description, setDescription] = useState("");
 
-  const onAddPressed = async () => {
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const loadData = async () => {
+    if (noteTitle) {
+      let description = await AsyncStorage.getItem(noteTitle);
+      setTitle(noteTitle);
+      setDescription(description);
+    }
+  };
+
+  const onUpdatePressed = async () => {
     if (title != "" && description != "") {
       try {
         let value = await AsyncStorage.getItem(title);
         if (value) {
-          alert("Title already exists");
-        } else {
           await AsyncStorage.setItem(title, description);
-          // setTitle("");
-          // setDescription("");
-          alert("Note saved");
+          alert("Note Updated");
           props.navigation.navigate("Main");
-          //props.navigation.goBack();
         }
       } catch (e) {
         console.log(e);
@@ -46,6 +56,7 @@ const CreateNote = (props) => {
     <KeyboardAvoidingView behavior="height" style={styles.container}>
       <View style={{ ...styles.card, height: "7%" }}>
         <TextInput
+          value={title}
           style={{ padding: 10 }}
           placeholder="Enter title here"
           onChangeText={(t) => setTitle(t)}
@@ -57,10 +68,11 @@ const CreateNote = (props) => {
           placeholder="Enter description here"
           onChangeText={(t) => setDescription(t)}
           multiline={true}
+          value={description}
         />
       </View>
       <View style={{ alignSelf: "center" }}>
-        <Button title="Add Note" onPress={() => onAddPressed()} />
+        <Button title="Update Note" onPress={() => onUpdatePressed()} />
       </View>
     </KeyboardAvoidingView>
   );
@@ -82,4 +94,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CreateNote;
+export default UpdateNote;
