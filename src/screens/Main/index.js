@@ -6,8 +6,14 @@ import {
   FlatList,
   Image,
   TouchableOpacity,
+  ToastAndroid,
 } from "react-native";
-import { ADD_BUTTON_IMG, NOTE_IMG, CLEAR_IMG } from "../../../res/drawables";
+import {
+  ADD_BUTTON_IMG,
+  NOTE_IMG,
+  CLEAR_IMG,
+  DELETE_ICON,
+} from "../../../res/drawables";
 import ImageButton from "../../components/ImageButton";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -21,37 +27,64 @@ const Main = (props) => {
   const loadAllKeyFromAsyncStorage = async () => {
     let keys = await AsyncStorage.getAllKeys();
     setData(keys);
-    //console.log(keys);
   };
 
   const clearAsyncStorage = async () => {
     AsyncStorage.clear();
   };
 
+  const deleteNote = async (item) => {
+    AsyncStorage.removeItem(item);
+    ToastAndroid.show("Deleted", ToastAndroid.LONG);
+  };
+
   return (
     <View style={styles.container}>
-      <FlatList
-        data={data}
-        numColumns={4}
-        renderItem={({ item }) => {
-          return (
-            <TouchableOpacity
-              onPress={async () => {
-                let title = item;
-                //let description = await AsyncStorage.getItem(item);
-                //props.navigation.navigate("Details", { title, description });
-                props.navigation.navigate("Update", title);
-              }}
-            >
-              <View style={{ margin: 5 }}>
-                <Image style={styles.noteIcon} source={NOTE_IMG} />
-                <Text style={styles.text}>{item}</Text>
-              </View>
-            </TouchableOpacity>
-          );
-        }}
-        keyExtractor={(item) => item}
-      />
+      {data.length != 0 ? (
+        <FlatList
+          data={data}
+          numColumns={4}
+          renderItem={({ item }) => {
+            return (
+              <TouchableOpacity
+                onPress={async () => {
+                  let title = item;
+                  props.navigation.navigate("Update", title);
+                }}
+              >
+                <View style={{ margin: 5 }}>
+                  <TouchableOpacity onPress={() => deleteNote(item)}>
+                    <Image
+                      style={styles.deleteIcon}
+                      source={DELETE_ICON}
+                      alignSelf="flex-end"
+                    />
+                  </TouchableOpacity>
+                  <Image style={styles.noteIcon} source={NOTE_IMG} />
+
+                  <Text style={styles.text}>{item}</Text>
+                </View>
+              </TouchableOpacity>
+            );
+          }}
+          keyExtractor={(item) => item}
+        />
+      ) : (
+        <View
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        >
+          <Text
+            style={{
+              fontSize: 20,
+              fontStyle: "italic",
+              fontWeight: "bold",
+              color: "#b30008",
+            }}
+          >
+            Nothing to see here...
+          </Text>
+        </View>
+      )}
       <View style={styles.icons_container}>
         <ImageButton source={CLEAR_IMG} onPress={() => clearAsyncStorage()} />
         <ImageButton
@@ -71,6 +104,10 @@ const styles = StyleSheet.create({
   noteIcon: {
     height: 80,
     width: 80,
+  },
+  deleteIcon: {
+    height: 30,
+    width: 30,
   },
   text: {
     alignSelf: "center",

@@ -3,9 +3,11 @@ import {
   View,
   Text,
   Button,
+  Pressable,
   TextInput,
   StyleSheet,
   KeyboardAvoidingView,
+  ToastAndroid,
 } from "react-native";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -20,6 +22,7 @@ const UpdateNote = (props) => {
   let noteTitle = props.route.params;
   console.log(props.route.params);
   console.log(noteTitle);
+
   const [title, setTitle] = useState(noteTitle);
   const [description, setDescription] = useState("");
 
@@ -41,14 +44,16 @@ const UpdateNote = (props) => {
         let value = await AsyncStorage.getItem(title);
         if (value) {
           await AsyncStorage.setItem(title, description);
-          alert("Note Updated");
+          //alert("Updated");
+          ToastAndroid.show("Updated!", ToastAndroid.SHORT);
           props.navigation.navigate("Main");
         }
       } catch (e) {
         console.log(e);
       }
     } else {
-      alert("Kindly add title and description");
+      //alert("Kindly add title and description");
+      ToastAndroid.show("Add title and description", ToastAndroid.LONG);
     }
   };
 
@@ -62,7 +67,7 @@ const UpdateNote = (props) => {
           onChangeText={(t) => setTitle(t)}
         />
       </View>
-      <View style={{ ...styles.card, height: "70%" }}>
+      <View style={{ ...styles.card, height: "30%" }}>
         <TextInput
           style={{ margin: 10 }}
           placeholder="Enter description here"
@@ -71,9 +76,21 @@ const UpdateNote = (props) => {
           value={description}
         />
       </View>
-      <View style={{ alignSelf: "center" }}>
-        <Button title="Update Note" onPress={() => onUpdatePressed()} />
+      <View style={{ ...styles.card, alignSelf: "center", padding: 10 }}>
+        <Pressable
+          style={{ alignSelf: "center" }}
+          onPress={() => {
+            onUpdatePressed();
+          }}
+        >
+          <Text style={{ color: "#3366ff", fontWeight: "bold" }}>
+            Update Note
+          </Text>
+        </Pressable>
       </View>
+      {/* <View style={styles.button}>
+        <Button title="Update Note" onPress={() => onUpdatePressed()} />
+      </View> */}
     </KeyboardAvoidingView>
   );
 };

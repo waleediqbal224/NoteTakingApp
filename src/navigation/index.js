@@ -5,7 +5,6 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Splash from "../screens/Splash";
 import Main from "../screens/Main";
 import CreateNote from "../screens/CreateNote";
-import NoteDetails from "../screens/NoteDetails";
 import UpdateNote from "../screens/UpdateNote";
 
 const Stack = createNativeStackNavigator();
@@ -29,11 +28,7 @@ function Navigation() {
           name="Create"
           component={CreateNote}
         />
-        <Stack.Screen
-          options={{ headerTitleAlign: "center" }}
-          name="Details"
-          component={NoteDetails}
-        />
+
         <Stack.Screen
           options={{ headerTitleAlign: "center" }}
           name="Update"

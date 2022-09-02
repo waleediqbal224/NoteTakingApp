@@ -6,6 +6,8 @@ import {
   TextInput,
   StyleSheet,
   KeyboardAvoidingView,
+  Pressable,
+  ToastAndroid,
 } from "react-native";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -25,12 +27,15 @@ const CreateNote = (props) => {
       try {
         let value = await AsyncStorage.getItem(title);
         if (value) {
-          alert("Title already exists");
+          ToastAndroid.show("Title already exists", ToastAndroid.LONG);
+
+          //alert("Title already exists");
         } else {
           await AsyncStorage.setItem(title, description);
           // setTitle("");
           // setDescription("");
-          alert("Note saved");
+          //alert("Note saved");
+          ToastAndroid.show("Note saved", ToastAndroid.SHORT);
           props.navigation.navigate("Main");
           //props.navigation.goBack();
         }
@@ -38,7 +43,8 @@ const CreateNote = (props) => {
         console.log(e);
       }
     } else {
-      alert("Kindly add title and description");
+      ToastAndroid.show("Add title and description", ToastAndroid.LONG);
+      //alert("Kindly add title and description");
     }
   };
 
@@ -51,7 +57,7 @@ const CreateNote = (props) => {
           onChangeText={(t) => setTitle(t)}
         />
       </View>
-      <View style={{ ...styles.card, height: "70%" }}>
+      <View style={{ ...styles.card, height: "30%" }}>
         <TextInput
           style={{ margin: 10 }}
           placeholder="Enter description here"
@@ -59,9 +65,19 @@ const CreateNote = (props) => {
           multiline={true}
         />
       </View>
-      <View style={{ alignSelf: "center" }}>
-        <Button title="Add Note" onPress={() => onAddPressed()} />
+      <View style={{ ...styles.card, alignSelf: "center", padding: 10 }}>
+        <Pressable
+          style={{ alignSelf: "center" }}
+          onPress={() => {
+            onAddPressed();
+          }}
+        >
+          <Text style={{ color: "#3366ff", fontWeight: "bold" }}>Add Note</Text>
+        </Pressable>
       </View>
+      {/* <View style={styles.button}>
+        <Button title="Add Note" onPress={() => onAddPressed()} />
+      </View> */}
     </KeyboardAvoidingView>
   );
 };
