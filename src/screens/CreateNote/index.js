@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import {
   View,
   Text,
-  Button,
   TextInput,
   StyleSheet,
   KeyboardAvoidingView,
@@ -18,53 +17,70 @@ import {
   COLOR_BLACK,
 } from "../../../res/drawables";
 
+import firebaseApp from "../../../api/firebase";
+import { getFirestore } from "firebase/firestore";
+import { collection, addDoc, doc, setDoc } from "firebase/firestore";
+
 const CreateNote = (props) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
 
+  const db = getFirestore(firebaseApp);
+
   const onAddPressed = async () => {
     if (title != "" && description != "") {
+      //setdoc is used to define your own documentId
+      try {
+        await setDoc(doc(db, "Notes", title), { description });
+      } catch (e) {}
+
+      //Cloud Firestore
+      // try {
+      //   const docRef = await addDoc(collection(db, "Notes"), {
+      //     Title: title,
+      //     Description: description,
+      //   });
+      //   console.log("Document written with ID: ", docRef.id);
+      // } catch (e) {
+      //   console.error("Error adding document: ", e);
+      // }
+
+      //ASYNC STORAGE
       try {
         let value = await AsyncStorage.getItem(title);
         if (value) {
           ToastAndroid.show("Title already exists", ToastAndroid.LONG);
-
-          //alert("Title already exists");
         } else {
           await AsyncStorage.setItem(title, description);
-          // setTitle("");
-          // setDescription("");
-          //alert("Note saved");
           ToastAndroid.show("Note saved", ToastAndroid.SHORT);
           props.navigation.navigate("Main");
-          //props.navigation.goBack();
         }
       } catch (e) {
         console.log(e);
       }
     } else {
       ToastAndroid.show("Add title and description", ToastAndroid.LONG);
-      //alert("Kindly add title and description");
     }
   };
 
   return (
     <KeyboardAvoidingView behavior="height" style={styles.container}>
-      <View style={{ ...styles.card, height: "7%" }}>
-        <TextInput
-          style={{ padding: 10 }}
-          placeholder="Enter title here"
-          onChangeText={(t) => setTitle(t)}
-        />
-      </View>
-      <View style={{ ...styles.card, height: "30%" }}>
-        <TextInput
-          style={{ margin: 10 }}
-          placeholder="Enter description here"
-          onChangeText={(t) => setDescription(t)}
-          multiline={true}
-        />
-      </View>
+      <TextInput
+        style={{ ...styles.card, padding: 10 }}
+        placeholder="Enter title here"
+        onChangeText={(t) => setTitle(t)}
+      />
+      <TextInput
+        style={{
+          ...styles.card,
+          padding: 10,
+          height: 200,
+          textAlignVertical: "top",
+        }}
+        placeholder="Enter description here"
+        onChangeText={(t) => setDescription(t)}
+        multiline={true}
+      />
       <View style={{ ...styles.card, alignSelf: "center", padding: 10 }}>
         <Pressable
           style={{ alignSelf: "center" }}
@@ -75,9 +91,6 @@ const CreateNote = (props) => {
           <Text style={{ color: "#3366ff", fontWeight: "bold" }}>Add Note</Text>
         </Pressable>
       </View>
-      {/* <View style={styles.button}>
-        <Button title="Add Note" onPress={() => onAddPressed()} />
-      </View> */}
     </KeyboardAvoidingView>
   );
 };

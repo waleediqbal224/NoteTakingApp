@@ -14,20 +14,34 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "config": {
+        "googleMobileAdsAppId": "ca-app-pub-8793595211225844~2104308919"
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "config": {
+        "googleMobileAdsAppId": "ca-app-pub-8793595211225844~6103263674"
+      },
+      "package": "com.waleediqbal224.ErozgarNoteTakingApp"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "6643f831-952c-4078-9d05-8f0a1a58a34e"
+      }
     }
+  },
+
+  "react-native-google-mobile-ads": {
+    "android_app_id": "ca-app-pub-8793595211225844~6103263674"
   }
 }

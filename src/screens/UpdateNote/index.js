@@ -44,7 +44,6 @@ const UpdateNote = (props) => {
         let value = await AsyncStorage.getItem(title);
         if (value) {
           await AsyncStorage.setItem(title, description);
-          //alert("Updated");
           ToastAndroid.show("Updated!", ToastAndroid.SHORT);
           props.navigation.navigate("Main");
         }
@@ -52,30 +51,31 @@ const UpdateNote = (props) => {
         console.log(e);
       }
     } else {
-      //alert("Kindly add title and description");
       ToastAndroid.show("Add title and description", ToastAndroid.LONG);
     }
   };
 
   return (
     <KeyboardAvoidingView behavior="height" style={styles.container}>
-      <View style={{ ...styles.card, height: "7%" }}>
-        <TextInput
-          value={title}
-          style={{ padding: 10 }}
-          placeholder="Enter title here"
-          onChangeText={(t) => setTitle(t)}
-        />
-      </View>
-      <View style={{ ...styles.card, height: "30%" }}>
-        <TextInput
-          style={{ margin: 10 }}
-          placeholder="Enter description here"
-          onChangeText={(t) => setDescription(t)}
-          multiline={true}
-          value={description}
-        />
-      </View>
+      <TextInput
+        style={{ ...styles.card, padding: 10 }}
+        value={title}
+        placeholder="Enter title here"
+        onChangeText={(t) => setTitle(t)}
+      />
+      <TextInput
+        style={{
+          ...styles.card,
+          padding: 10,
+          height: 200,
+          textAlignVertical: "top",
+        }}
+        placeholder="Enter description here"
+        value={description}
+        onChangeText={(t) => setDescription(t)}
+        multiline={true}
+      />
+
       <View style={{ ...styles.card, alignSelf: "center", padding: 10 }}>
         <Pressable
           style={{ alignSelf: "center" }}
@@ -88,9 +88,6 @@ const UpdateNote = (props) => {
           </Text>
         </Pressable>
       </View>
-      {/* <View style={styles.button}>
-        <Button title="Update Note" onPress={() => onUpdatePressed()} />
-      </View> */}
     </KeyboardAvoidingView>
   );
 };

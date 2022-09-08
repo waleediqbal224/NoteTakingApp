@@ -6,6 +6,8 @@ import Splash from "../screens/Splash";
 import Main from "../screens/Main";
 import CreateNote from "../screens/CreateNote";
 import UpdateNote from "../screens/UpdateNote";
+import Login from "../screens/Login";
+import SignUp from "../screens/SignUp";
 
 const Stack = createNativeStackNavigator();
 
@@ -18,6 +20,17 @@ function Navigation() {
           name="Splash"
           component={Splash}
         />
+        <Stack.Screen
+          options={{ headerShown: false, headerTitleAlign: "center" }}
+          name="Login"
+          component={Login}
+        />
+        <Stack.Screen
+          options={{ headerShown: false, headerTitleAlign: "center" }}
+          name="Signup"
+          component={SignUp}
+        />
+
         <Stack.Screen
           options={{ headerTitleAlign: "center" }}
           name="Main"

@@ -17,6 +17,8 @@ import {
 import ImageButton from "../../components/ImageButton";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+import firebaseApp from "../../../api/firebase";
+
 const Main = (props) => {
   const [data, setData] = useState([]);
 
