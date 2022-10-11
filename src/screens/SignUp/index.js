@@ -15,21 +15,27 @@ import {
   COLOR_WHITE,
   COLOR_BLACK,
 } from "../../../res/drawables";
+//import { COLLLECTION_USER } from "../../../res/strings";
 
-import AsyncStorage from "@react-native-async-storage/async-storage";
+//import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import firebaseApp from "../../../api/firebase";
+import { getFirestore, collection, addDoc } from "firebase/firestore";
 
 const SignUp = (props) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const db = getFirestore(firebaseApp);
+
   const onSignUpPressed = async () => {
     const auth = getAuth();
     if (email.includes("@") && password) {
       try {
+        await addDoc(collection(db, email), {});
         let user = await createUserWithEmailAndPassword(auth, email, password);
         ToastAndroid.show("User created successfully", ToastAndroid.LONG);
-        props.navigation.goBack();
+        props.navigation.navigate("Login");
       } catch (e) {
         console.log(e);
       }

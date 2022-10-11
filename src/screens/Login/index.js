@@ -33,8 +33,9 @@ const Login = (props) => {
     if (email.includes("@") && password) {
       try {
         await signInWithEmailAndPassword(auth, email, password);
-        alert("Logged In");
-        props.navigation.replace("Main");
+        ToastAndroid.show("Logged In", ToastAndroid.SHORT);
+        //alert("Logged In");
+        props.navigation.replace("Main", { email: email });
       } catch (error) {
         alert(error.code);
       }

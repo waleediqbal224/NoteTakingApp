@@ -7,6 +7,7 @@ import {
   Image,
   TouchableOpacity,
   ToastAndroid,
+  ActivityIndicator,
 } from "react-native";
 import {
   ADD_BUTTON_IMG,
@@ -18,30 +19,85 @@ import ImageButton from "../../components/ImageButton";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import firebaseApp from "../../../api/firebase";
+import {
+  collection,
+  getDocs,
+  getFirestore,
+  query,
+  onSnapshot,
+  QuerySnapshot,
+  doc,
+  deleteDoc,
+} from "firebase/firestore";
+import axios from "axios";
+import { getWeatherOfCity } from "../../services/weather";
 
 const Main = (props) => {
   const [data, setData] = useState([]);
+  const [isLoading, setLoading] = useState(false);
+  const { email } = props.route.params;
 
   useEffect(() => {
-    loadAllKeyFromAsyncStorage();
-  }, [data]);
+    loadData();
+  }, []);
 
-  const loadAllKeyFromAsyncStorage = async () => {
-    let keys = await AsyncStorage.getAllKeys();
-    setData(keys);
-  };
+  const db = getFirestore(firebaseApp);
 
-  const clearAsyncStorage = async () => {
-    AsyncStorage.clear();
+  const loadData = async () => {
+    let keys = [];
+    setLoading(true);
+    //WEATHER API
+    alert(await getWeatherOfCity("Bahawalpur"));
+    //REALTIME DATABASE
+    const q = query(collection(db, email));
+    try {
+      const unsub = onSnapshot(q, (querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          //console.log(doc.data());
+          keys.push(doc.data());
+        });
+        setData(keys);
+        setLoading(false);
+        keys = [];
+        //unsub();
+      });
+      // console.log("keys are:" + keys);
+    } catch (e) {}
+
+    // const querySnapshot = await getDocs(collection(db, email));
+    // querySnapshot.forEach((doc) => {
+    //   // doc.data() is never undefined for query doc snapshots
+    //   console.log(doc.id, " => ", doc.data());
+    //   keys.push(doc.data());
+    // });
   };
 
   const deleteNote = async (item) => {
-    AsyncStorage.removeItem(item);
-    ToastAndroid.show("Deleted", ToastAndroid.LONG);
+    await deleteDoc(doc(db, email, item));
   };
+
+  // useEffect(() => {
+  //   loadAllKeyFromAsyncStorage();
+  // }, [data]);
+
+  // const loadAllKeyFromAsyncStorage = async () => {
+  //   let keys = await AsyncStorage.getAllKeys();
+  //   setData(keys);
+  // };
+
+  // const clearAsyncStorage = async () => {
+  //   AsyncStorage.clear();
+  // };
+
+  // const deleteNote = async (item) => {
+  //   AsyncStorage.removeItem(item);
+  //   ToastAndroid.show("Deleted", ToastAndroid.LONG);
+  // };
 
   return (
     <View style={styles.container}>
+      {isLoading ? <ActivityIndicator /> : null}
+
       {data.length != 0 ? (
         <FlatList
           data={data}
@@ -50,12 +106,17 @@ const Main = (props) => {
             return (
               <TouchableOpacity
                 onPress={async () => {
-                  let title = item;
-                  props.navigation.navigate("Update", title);
+                  let noteTitle = item.title;
+                  let noteDescription = item.description;
+                  props.navigation.navigate("Update", {
+                    noteTitle,
+                    noteDescription,
+                    email,
+                  });
                 }}
               >
                 <View style={{ margin: 5 }}>
-                  <TouchableOpacity onPress={() => deleteNote(item)}>
+                  <TouchableOpacity onPress={() => deleteNote(item.title)}>
                     <Image
                       style={styles.deleteIcon}
                       source={DELETE_ICON}
@@ -63,15 +124,14 @@ const Main = (props) => {
                     />
                   </TouchableOpacity>
                   <Image style={styles.noteIcon} source={NOTE_IMG} />
-
-                  <Text style={styles.text}>{item}</Text>
+                  <Text style={styles.text}>{item.title}</Text>
                 </View>
               </TouchableOpacity>
             );
           }}
           keyExtractor={(item) => item}
         />
-      ) : (
+      ) : !isLoading ? (
         <View
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
         >
@@ -86,12 +146,17 @@ const Main = (props) => {
             Nothing to see here...
           </Text>
         </View>
-      )}
+      ) : null}
+
       <View style={styles.icons_container}>
-        <ImageButton source={CLEAR_IMG} onPress={() => clearAsyncStorage()} />
+        {/* <ImageButton source={CLEAR_IMG} onPress={() => clearAsyncStorage()} /> */}
         <ImageButton
           source={ADD_BUTTON_IMG}
-          onPress={() => props.navigation.navigate("Create")}
+          onPress={() => props.navigation.navigate("Create", { email })}
+        />
+        <ImageButton
+          source={CLEAR_IMG}
+          onPress={() => props.navigation.navigate("Map")}
         />
       </View>
     </View>
@@ -120,6 +185,7 @@ const styles = StyleSheet.create({
   icons_container: {
     flexDirection: "row",
     justifyContent: "space-between",
+    //justifyContent: "flex-end",
     margin: 10,
   },
 });

@@ -8,6 +8,7 @@ import CreateNote from "../screens/CreateNote";
 import UpdateNote from "../screens/UpdateNote";
 import Login from "../screens/Login";
 import SignUp from "../screens/SignUp";
+import MapLoation from "../services/maps";
 
 const Stack = createNativeStackNavigator();
 
@@ -46,6 +47,11 @@ function Navigation() {
           options={{ headerTitleAlign: "center" }}
           name="Update"
           component={UpdateNote}
+        />
+        <Stack.Screen
+          options={{ headerShown: false, headerTitleAlign: "center" }}
+          name="Map"
+          component={MapLoation}
         />
       </Stack.Navigator>
     </NavigationContainer>

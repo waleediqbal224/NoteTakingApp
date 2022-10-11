@@ -20,19 +20,32 @@ import {
 import firebaseApp from "../../../api/firebase";
 import { getFirestore } from "firebase/firestore";
 import { collection, addDoc, doc, setDoc } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
 
 const CreateNote = (props) => {
+  const { email } = props.route.params;
+  console.log(email);
+
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
 
+  const auth = getAuth();
   const db = getFirestore(firebaseApp);
 
   const onAddPressed = async () => {
     if (title != "" && description != "") {
       //setdoc is used to define your own documentId
       try {
-        await setDoc(doc(db, "Notes", title), { description });
-      } catch (e) {}
+        const docRef = await setDoc(doc(db, email, title), {
+          title: title,
+          description: description,
+        });
+
+        ToastAndroid.show("Note saved", ToastAndroid.SHORT);
+        props.navigation.goBack();
+      } catch (e) {
+        console.log(e);
+      }
 
       //Cloud Firestore
       // try {
@@ -45,19 +58,19 @@ const CreateNote = (props) => {
       //   console.error("Error adding document: ", e);
       // }
 
-      //ASYNC STORAGE
-      try {
-        let value = await AsyncStorage.getItem(title);
-        if (value) {
-          ToastAndroid.show("Title already exists", ToastAndroid.LONG);
-        } else {
-          await AsyncStorage.setItem(title, description);
-          ToastAndroid.show("Note saved", ToastAndroid.SHORT);
-          props.navigation.navigate("Main");
-        }
-      } catch (e) {
-        console.log(e);
-      }
+      // ASYNC STORAGE
+      // try {
+      //   let value = await AsyncStorage.getItem(title);
+      //   if (value) {
+      //     ToastAndroid.show("Title already exists", ToastAndroid.LONG);
+      //   } else {
+      //     await AsyncStorage.setItem(title, description);
+      //     //ToastAndroid.show("Note saved", ToastAndroid.SHORT);
+      //     //props.navigation.navigate("Main");
+      //   }
+      // } catch (e) {
+      //   console.log(e);
+      // }
     } else {
       ToastAndroid.show("Add title and description", ToastAndroid.LONG);
     }
